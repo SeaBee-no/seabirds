@@ -28,14 +28,14 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-print(args.sdcard, "=>", args.backup1, "=> sigma")
+print(args.sdcard, "=>", args.backup1, "=>", args.backup2, "=> sigma")
 
 # mount the drives
-try:
-    os.system("sudo mkdir "+args.sdcard)
-    os.system("sudo mount -t drvfs "+args.sdcard[-1:].upper()+": "+args.sdcard)
-except:
-    pass
+#try:
+#    os.system("sudo mkdir "+args.sdcard)
+#    os.system("sudo mount -t drvfs "+args.sdcard[-1:].upper()+": "+args.sdcard)
+#except:
+#    pass
 
 try:
     os.system("sudo mkdir "+args.backup1)
@@ -50,14 +50,14 @@ except:
     pass
 
 # copy from sd to hard drive
-os.system("rclone copy "+args.sdcard+"/DCIM/ "+args.backup1+" --progress")
+#os.system("rclone copy "+args.sdcard+"/DCIM/ "+args.backup1+" --progress")
 
 # unmount the drive
-try:
-    os.system("sudo umount "+args.sdcard)
-except:
-    pass
-print(bcolors.OKGREEN + "SAFE TO REMOVE SDCARD" + bcolors.ENDC)
+#try:
+#    os.system("sudo umount "+args.sdcard)
+#except:
+#    pass
+#print(bcolors.OKGREEN + "SAFE TO REMOVE SDCARD" + bcolors.ENDC)
 
 # copy and rearrange to local disk
 folders = os.listdir(args.backup1)
@@ -72,10 +72,16 @@ for folder in folders:
             if filename[-4:]==".JPG" or filename[-4:]==".jpg":
                 datetime = filename.split("_")[1][:12]
                 break
-        newfoldername = grouping+"_"+missionname+"_"+datetime
-        newfolder = args.backup2+"/"+newfoldername
-        print(newfolder)
-        if not os.path.isdir(newfolder):
+        finished = list()
+        for thisfolder in os.listdir(args.backup2):
+            x = thisfolder.split("_")
+            if len(x)==3:
+                finished.append(x[1]+"_"+x[2])
+        if missionname+"_"+datetime not in finished:
+            newfoldername = grouping+"_"+missionname+"_"+datetime
+            newfolder = args.backup2+"/"+newfoldername
+            print(newfolder)
+            #if not os.path.isdir(newfolder):
             print(bcolors.OKBLUE + folder, "=>", newfolder + bcolors.ENDC)
             os.makedirs(newfolder+"/images")
             os.system("rclone copy "+args.backup1+"/"+folder+" "+newfolder+"/images --progress")
