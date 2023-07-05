@@ -9,7 +9,7 @@ import shutil
 # except:
 #     pass
 
-rootfolder = "/mnt/d/tilsigma"
+rootfolder = "/mnt/c/Users/sindre.molvarsmyr/Downloads/til_sindre"
 folders = os.listdir(rootfolder)
 print(folders)
 for folder in folders:
@@ -23,7 +23,7 @@ for folder in folders:
         f = open(rootfolder+"/"+folder+"/config.yaml", "a")
         f.write("nfiles: "+str(nfiles)+"\n")
         f.write("organisation: NINA\n")
-        f.write("creator_name: \n")
+        f.write("creator_name: Sine Dagsdatter Hagestad\n")
         f.write("mosaic: true\n")
         f.write("publish: true\n")
         f.write("theme: Seabirds\n")
