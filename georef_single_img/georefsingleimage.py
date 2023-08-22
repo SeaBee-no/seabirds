@@ -26,14 +26,14 @@ import numpy as np
 #filename = '/mnt/nas/drone/test/DJI_20230520132711_0063_V.JPG'
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
 #inputfolder = '/mnt/nas/drone/test/input/'
-inputfolder = '/mnt/nas/drone/2022/Runde_imagesforannotation/unused/'
-#inputfolder = '/mnt/nas/drone/test/rauna/'
+inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
+#inputfolder = 'shared-seabee-ns9879k/seabirds/test'
 
-outputfolder = '/mnt/nas/drone/test/output/'
+outputfolder = 'shared-seabee-ns9879k/seabirds/test/'
 
 # focal length, sensor width, sensor height
 sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24)]
-sensor = sensors[1]
+sensor = sensors[0]
 
 # defines functions for online altitude api and exif extraction
 def get_elevation(x):
