@@ -40,7 +40,7 @@ def get_geotag_coordinates(geotags):
     return (lat_degrees + lat_minutes + lat_seconds, lon_degrees + lon_minutes + lon_seconds)
 
 
-filepath = "shared-seabee-ns9879k/seabirds/2022/Runde_havsule_20220902/3d_mesh/2022-09-02_Havsule_texture.jpg"
+filepath = "shared-seabee-ns9879k/seabirds/2023/agder_halvorsholmene-V_20230520/images/._DJI_20230520124251_0084_V.JPG"
 print(filepath)
 
 # Get FileModifyDate
@@ -66,7 +66,7 @@ if filename == mission:
 bodyserialnumber = None
 datetimeoriginal = None
 # special functions for jpg
-if(filetype == "image/jpeg"):
+if(filetype == "image/jpeg" and not filename.startswith(".")):
     img = Image.open(filepath)
     
     try:
