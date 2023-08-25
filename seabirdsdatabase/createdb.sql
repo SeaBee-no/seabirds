@@ -41,7 +41,7 @@ CREATE TABLE detections (
 );
 
 CREATE TABLE files (
-    id integer NOT NULL,
+    id BIGINT NOT NULL,
     rootdirectory text NOT NULL,
     mission text,
     subdirectory text,
@@ -49,8 +49,28 @@ CREATE TABLE files (
     filemodifydate timestamp without time zone NOT NULL,
     datetimeoriginal timestamp without time zone,
     filetype text NOT NULL,
-    bodyserialnumber text,
-    geom public.geometry(Point,4326)
+    filesize BIGINT NOT NULL,
+    geom public.geometry(Point,4326),
+    ExposureTime text,
+    FNumber numeric,
+    ISO integer,
+    width integer,
+    height integer,
+    Make text,
+    Model text,
+    BodySerialNumber text,
+    GPSStatus text,
+    AbsoluteAltitude numeric,
+    RelativeAltitude numeric,
+    GimbalRollDegree numeric,
+    GimbalYawDegree numeric,
+    GimbalPitchDegree numeric,
+    FlightRollDegree numeric,
+    FlightYawDegree numeric,
+    FlightPitchDegree numeric,
+    FlightXSpeed numeric,
+    FlightYSpeed numeric,
+    FlightZSpeed numeric
 );
 
 CREATE SEQUENCE detections_id_seq
