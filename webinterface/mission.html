@@ -90,33 +90,33 @@
         <div id="form">
             <label for="selectSpecies"><span class="number">1</span>Species:</label>
             <select id="selectSpecies" name="selectSpecies">
-                <option value="option2">Lesser black-backed gull</option>
-                <option value="option1">Herring gull</option>
-                <option value="option3">Common gull</option>
+                <option value="2570">Lesser black-backed gull</option>
+                <option value="2560">Herring gull</option>
+                <option value="2550">Common gull</option>
             </select>
             <p></p>
 
             <label for="selectActivity"><span class="number">2</span>Activity:</label>
             <select id="selectActivity" name="selectOption">
-                <option value="option1">On nest</option>
-                <option value="option2">On land</option>
-                <option value="option3">In flight</option>
+                <option value="1">On nest</option>
+                <option value="2">On land</option>
+                <option value="3">In flight</option>
             </select>
             <p></p>
 
             <label for="selectSex"><span class="number">3</span>Sex:</label>
             <select id="selectSex" name="selectSex">
-                <option value="option1">Unknown</option>
-                <option value="option2">Male</option>
-                <option value="option3">Female</option>
+                <option value="0">Unknown</option>
+                <option value="1">Male</option>
+                <option value="2">Female</option>
             </select>
             <p></p>
 
             <label for="selectAge"><span class="number">4</span>Age:</label>
             <select id="selectAge" name="selectAge">
-                <option value="option1">Adult</option>
-                <option value="option2">Pullus</option>
-                <option value="option3">1K</option>
+                <option value="3">Adult</option>
+                <option value="1">Pullus</option>
+                <option value="4">1K</option>
             </select>
             <p></p>
 
@@ -232,7 +232,7 @@
             var polygon = L.polygon(latlngs, {color: 'red'}).addTo(map);
             polygon.bindPopup("Adds: "+coords+"<br />"+species+"<br />"+activity+"<br />"+sex+"<br />"+age+"<br />"+visible+"<br />"+comment);
             //alert("Adds: "+coords+"\n"+species+"\n"+activity+"\n"+sex+"\n"+age+"\n"+visible+"\n"+comment);
-            polygon.bindTooltip("My polygon",
+            polygon.bindTooltip(species+" "+activity,
                 {permanent: true, sticky: false, offset: [0,0], opacity: 0.5}
             ).openTooltip()
         }
