@@ -25,15 +25,16 @@ import numpy as np
 #img = Image.open('/data/P-Prosjekter2/22660210_droner_sjofugl/test/input/DJI_6688.JPG')
 #filename = '/mnt/nas/drone/test/DJI_20230520132711_0063_V.JPG'
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
-#inputfolder = '/mnt/nas/drone/test/input/'
-inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
+inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
+#inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
 #inputfolder = 'shared-seabee-ns9879k/seabirds/test'
 
-outputfolder = 'shared-seabee-ns9879k/seabirds/test/'
+#outputfolder = 'shared-seabee-ns9879k/seabirds/test/'
+outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t_georef/'
 
 # focal length, sensor width, sensor height
-sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24)]
-sensor = sensors[0]
+sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24), ("H20T Thermal", 13.5, 7.68, 6.144), ("H20T Zoom 2x", 10.14, 7.41, 5.56)]
+sensor = sensors[2]
 
 # defines functions for online altitude api and exif extraction
 def get_elevation(x):
