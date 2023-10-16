@@ -27,14 +27,14 @@ import numpy as np
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
 #inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
 #inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
-inputfolder = 'test/z/'
+inputfolder = 'test/t/'
 
-outputfolder = 'test/z_georef/'
+outputfolder = 'test/t_georef/'
 #outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t_georef/'
 
 # focal length, sensor width, sensor height
 sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24), ("H20T Thermal", 13.5, 7.68, 6.144), ("H20T Zoom 2x", 10.14, 7.41, 5.56)]
-sensor = sensors[3]
+sensor = sensors[2]
 
 # defines functions for online altitude api and exif extraction
 def get_elevation(x):
@@ -145,8 +145,6 @@ for filename in files:
         if targetdistance != None:
             flightheight = targetdistance
 
-        print(relativealtitude, flightheight)
-
         # calculate the width and height of the view on the image
         alpha = math.degrees(math.atan((sensor[2]/2)/sensor[1]))
         distancex = abs(math.tan(math.radians(alpha))*flightheight)
@@ -215,6 +213,12 @@ for filename in files:
 
         # Apply the GCPs to the open output file:
         ds.SetGCPs(gcps, sr.ExportToWkt())
+
+        # Access the first band (assuming a single-band image) and set the NoData value
+        band = ds.GetRasterBand(1)
+        nodata_value = 0
+        band.SetNoDataValue(nodata_value)
+        #ds = gdal.Translate(outputfile, ds) # save with nodata value
 
         # Close the output file in order to be able to work with it in other programs:
         ds = None
