@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seabird database - Seabee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none; /* Remove underline */
+            color: #000; /* Change link color to blue */
+            display: block; /* Make links take the full width of the list item */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Seabird database - Seabee</h1>
+    </header>
+    <div class="container">
+        <input type="text" id="filterInput" placeholder="Search for folders...">
+        <ul id="folderList">
+            <a href="mission.html?mission=agder_rauna_20230526"><li>agder_rauna_20230526</li></a>
+            <a href="mission.html?mission=Team1Dag4_SondreSkjaelholmen_202305181212"><li>Team1Dag4_SondreSkjaelholmen_202305181212</li></a>
+            <a href="mission.html?mission=oslofjorden_nakkeskjaer_20230620"><li>oslofjorden_nakkeskjaer_20230620</li></a>
+            <a href="mission.html?mission=4"><li>Fedje_Holmengra_20230605</li></a>
+            <a href="mission.html?mission=5"><li>Fedje_Langedalen_20230531</li></a>
+            <a href="mission.html?mission=6"><li>Fedje_Ljosoyna_20220609</li></a>
+            <a href="mission.html?mission=7"><li>Fedje_Lyngholmen_20230605</li></a>
+            <a href="mission.html?mission=8"><li>Fedje_nordtrafikkstasjon_20230531</li></a>
+            <a href="mission.html?mission=9"><li>Fedje_Stormark_20230531</li></a>
+        </ul>
+    </div>
+    <script>
+        const filterInput = document.getElementById('filterInput');
+        const folderList = document.getElementById('folderList').getElementsByTagName('li');
+
+        filterInput.addEventListener('input', () => {
+            const filterValue = filterInput.value.toLowerCase();
+            for (const folder of folderList) {
+                const folderName = folder.textContent.toLowerCase();
+                if (folderName.includes(filterValue)) {
+                    folder.style.display = 'block';
+                } else {
+                    folder.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

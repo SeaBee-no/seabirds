@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geographic Extent Filter with Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #map {
+            height: 400px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 20px;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Geographic Extent Filter with Leaflet</h1>
+    </header>
+    <div id="map"></div>
+    <div class="container">
+        <button id="filterButton">Filter</button>
+        <div id="result"></div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+    <script>
+        const map = L.map('map').setView([40, -100], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        const drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const drawControl = new L.Control.Draw({
+            draw: {
+                rectangle: true,
+                polyline: false,
+                polygon: false,
+                circle: false,
+                circlemarker: false,
+                marker: false
+            },
+            edit: {
+                featureGroup: drawnItems
+            }
+        });
+        map.addControl(drawControl);
+
+        const filterButton = document.getElementById('filterButton');
+        const resultDiv = document.getElementById('result');
+
+        filterButton.addEventListener('click', () => {
+            const bounds = drawnItems.getBounds();
+            const minLat = bounds.getSouth();
+            const maxLat = bounds.getNorth();
+            const minLon = bounds.getWest();
+            const maxLon = bounds.getEast();
+
+            const result = filterByExtent(minLat, maxLat, minLon, maxLon);
+
+            resultDiv.innerHTML = result.map(coords => `[${coords[0]}, ${coords[1]}]<br>`).join('');
+        });
+
+        function filterByExtent(minLat, maxLat, minLon, maxLon) {
+            // Replace this sample data with your actual data
+            const data = [
+                [37, -109.05],
+                [41, -109.03],
+                [41, -102.05],
+                [37, -102.04],
+                [35, -105.1]
+                // Add more data points here...
+            ];
+
+            return data.filter(coords => {
+                const lat = coords[0];
+                const lon = coords[1];
+                return lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon;
+            });
+        }
+    </script>
+</body>
+</html>
