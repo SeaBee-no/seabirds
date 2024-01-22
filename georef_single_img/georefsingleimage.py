@@ -25,11 +25,11 @@ import numpy as np
 #img = Image.open('/data/P-Prosjekter2/22660210_droner_sjofugl/test/input/DJI_6688.JPG')
 #filename = '/mnt/nas/drone/test/DJI_20230520132711_0063_V.JPG'
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
-#inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
+inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
 #inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
-inputfolder = 'test/t/'
+#inputfolder = 'test/t/'
 
-outputfolder = 'test/t_georef/'
+outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test2/'
 #outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t_georef/'
 
 # focal length, sensor width, sensor height
