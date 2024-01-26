@@ -1,1 +1,2 @@
 seabirdsdatabase/dbconnection.py
+seabirdsdatabase/__pycache__/*.pyc

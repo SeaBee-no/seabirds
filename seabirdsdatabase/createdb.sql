@@ -37,7 +37,8 @@ CREATE TABLE detections (
     score_activity numeric,
     score_sex numeric,
     score_age numeric,
-    manuallyverified boolean NOT NULL
+    manuallyverified boolean NOT NULL,
+    userid bigint
 );
 
 CREATE TABLE files (
