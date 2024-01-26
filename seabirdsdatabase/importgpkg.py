@@ -5,7 +5,7 @@ from dbconnection import *
 import shapely.wkb
 
 # Step 1: Read GPKG file
-gpkg_file = 'C:/Users/sindre.molvarsmyr/Downloads/batch2.gpkg'
+gpkg_file = 'C:/Users/sindre.molvarsmyr/Downloads/out_VAL.gpkg'
 #gpkg_file = 'C:/dronedetections/per20230925.gpkg'
 gdf = gpd.read_file(gpkg_file)
 
@@ -21,8 +21,12 @@ for index, row in gdf.iterrows():
 
     # Prepare the SQL query. You'll need to modify this based on your table structure and data
     insert_query = sql.SQL("""
-        INSERT INTO detections (geom, filename, species, activity, sex, age, visibleonimage, modelversion, score_species, score_activity, score_sex, score_age, manuallyverified)
-        VALUES (ST_GeomFromWKB(%s::geometry), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT INTO detections (geom, filename, species, activity, sex, age, visibleonimage, modelversion, score_species, score_activity, score_sex, score_age, manuallyverified, comment)
+        VALUES (ST_GeomFromWKB(%s::geometry), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """)
+    insert_query = sql.SQL("""
+        INSERT INTO detections (geom, filename, species, activity, sex, age, visibleonimage, modelversion, score_species, manuallyverified, comment)
+        VALUES (ST_GeomFromWKB(%s::geometry), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """)
 
     filename = row['TEMP_image_filename']
@@ -36,17 +40,15 @@ for index, row in gdf.iterrows():
     values = (
         geom_wkb, 
         filename, 
-        row['species'], # species
-        row['activity'], # activity
-        row['sex'], # sex
-        row['age'], # age
+        0, #row['species'], # species
+        0,
+        0,
+        0,
         True, 
-        '20230925',
+        '20240126',
         row['score_species'],
-        row['score_activity'],
-        row['score_sex'],
-        row['score_age'],
-        False
+        False,
+        'val'
     )
 
     cur.execute(insert_query, values)
