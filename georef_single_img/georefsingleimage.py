@@ -25,16 +25,18 @@ import numpy as np
 #img = Image.open('/data/P-Prosjekter2/22660210_droner_sjofugl/test/input/DJI_6688.JPG')
 #filename = '/mnt/nas/drone/test/DJI_20230520132711_0063_V.JPG'
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
-inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
+#inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
+inputfolder = '/data/P-Prosjekter2/22660210_droner_sjofugl/2024/torndelag-froan_grogna_south_east_2024-05-27/'
 #inputfolder = 'shared-seabee-ns9879k/seabirds/2022/Runde_imagesforannotation/unused/'
 #inputfolder = 'test/t/'
 
-outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test2/'
+#outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test2/'
+outputfolder = '/data/P-Prosjekter2/22660210_droner_sjofugl/2024/torndelag-froan_grogna_south_east_2024-05-27_georef/'
 #outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t_georef/'
 
 # focal length, sensor width, sensor height
-sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24), ("H20T Thermal", 13.5, 7.68, 6.144), ("H20T Zoom 2x", 10.14, 7.41, 5.56)]
-sensor = sensors[2]
+sensors = [("M3E-Wide", 12.3, 17.3, 13), ("P1 35mm", 35, 35.9, 24), ("H20T Thermal", 13.5, 7.68, 6.144), ("H20T Zoom 2x", 10.14, 7.41, 5.56), ("Sony ILX-LR1", 24, 35.7, 23.8)]
+sensor = sensors[4]
 
 # defines functions for online altitude api and exif extraction
 def get_elevation(x):
@@ -64,6 +66,8 @@ def get_geotagging(img):
 def get_geotag_coordinates(geotags):
     lat = geotags['GPSLatitude']
     lon = geotags['GPSLongitude']
+    altitude = geotags['GPSAltitude']
+    heading = geotags['GPSImgDirection']
 
     lat_degrees = float(lat[0])
     lat_minutes = float(lat[1]) / 60
@@ -72,7 +76,7 @@ def get_geotag_coordinates(geotags):
     lon_minutes = float(lon[1]) / 60
     lon_seconds = float(lon[2]) / 3600
 
-    return (lat_degrees + lat_minutes + lat_seconds, lon_degrees + lon_minutes + lon_seconds)
+    return (lat_degrees + lat_minutes + lat_seconds, lon_degrees + lon_minutes + lon_seconds, altitude, heading)
 
 # loop through the input folder
 files = sorted(os.listdir(inputfolder))
@@ -131,7 +135,7 @@ for filename in files:
         # else:
         #     yaw = gimbalyaw
         # dont really understand the varations in the gimbalyaw. might not be reliable, so we go for only flightyaw so far..
-        yaw = flightyaw
+        yaw = coordinates[3]#flightyaw
 
         # Section that uses online elevation and absolutealtitude
         # print(yaw, pitch)
@@ -141,9 +145,11 @@ for filename in files:
         # else:
         #     flightheight = absolutealtitude - groundaltitude
         # unreliable (potensially the online service that gives "wrong" results)
-        flightheight = relativealtitude + 3
-        if targetdistance != None:
-            flightheight = targetdistance
+
+        # flightheight = relativealtitude + 3
+        # if targetdistance != None:
+        #     flightheight = targetdistance
+        flightheight = coordinates[2] + 2
 
         # calculate the width and height of the view on the image
         alpha = math.degrees(math.atan((sensor[2]/2)/sensor[1]))
