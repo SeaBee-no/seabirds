@@ -26,11 +26,11 @@ import numpy as np
 #filename = '/mnt/nas/drone/test/DJI_20230520132711_0063_V.JPG'
 #filename = '/mnt/nas/drone/test/DJI_20230418090059_0056_V.JPG'
 #inputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t/'
-inputfolder = 'shared-seabee-ns9879k/seabirds/test/trondelag-froan_grogna_south_east_2024-05-27/'
+inputfolder = '/home/notebook/test/test/trondelag-froan_grogna_south_east_2024-05-27/'
 #inputfolder = 'test/t/'
 
 #outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test2/'
-outputfolder = '/data/P-Prosjekter2/seabirds/test/trondelag-froan_grogna_south_east_2024-05-27'
+outputfolder = '/home/notebook/test/test/trondelag-froan_grogna_south_east_2024-05-27_georef/'
 #outputfolder = '/data/P-Prosjekter2/412338_fjellrypetaksering_med_drone/test/t_georef/'
 
 # focal length, sensor width, sensor height
@@ -63,19 +63,27 @@ def get_geotagging(img):
         raise ValueError("No EXIF metadata found")
 
 def get_geotag_coordinates(geotags):
+    def dms_to_dd(dms, ref):
+        degrees = float(dms[0])
+        minutes = float(dms[1])
+        seconds = float(dms[2])
+        dd = degrees + (minutes / 60) + (seconds / 3600)
+        if ref in ['S', 'W']:
+            dd *= -1
+        return dd
+
     lat = geotags['GPSLatitude']
+    lat_ref = geotags['GPSLatitudeRef']
     lon = geotags['GPSLongitude']
-    altitude = geotags['GPSAltitude']
-    heading = geotags['GPSImgDirection']
+    lon_ref = geotags['GPSLongitudeRef']
+    altitude = geotags.get('GPSAltitude', 0)
+    heading = geotags.get('GPSImgDirection', 0)
 
-    lat_degrees = float(lat[0])
-    lat_minutes = float(lat[1]) / 60
-    lat_seconds = float(lat[2]) / 3600
-    lon_degrees = float(lon[0])
-    lon_minutes = float(lon[1]) / 60
-    lon_seconds = float(lon[2]) / 3600
+    latitude = dms_to_dd(lat, lat_ref)
+    longitude = dms_to_dd(lon, lon_ref)
 
-    return (lat_degrees + lat_minutes + lat_seconds, lon_degrees + lon_minutes + lon_seconds, altitude, heading)
+    return latitude, longitude, altitude, heading
+
 
 # loop through the input folder
 files = sorted(os.listdir(inputfolder))
@@ -87,11 +95,9 @@ for filename in files:
         width, height = img.size
 
         # Get geotagging info
-        print("getting geotags")
         geotags = get_geotagging(img)
 
         # Get geotag coordinates
-        print("fixing coordinates")
         coordinates = get_geotag_coordinates(geotags)
         latitude = coordinates[0]
         longitude = coordinates[1]
@@ -103,9 +109,7 @@ for filename in files:
         xmp = xmpfile.get_xmp()
 
         # Iterate over all namespaces and save what we want or need
-        print("looping xmp")
         for ns in xmp:
-            print(ns[1], ns[2])
             # if(ns[1]=="drone-dji:GpsLatitude"):
             #     latitude = float(ns[2])
             # if(ns[1]=="drone-dji:GpsLongitude"):
@@ -137,7 +141,6 @@ for filename in files:
         # else:
         #     yaw = gimbalyaw
         # dont really understand the varations in the gimbalyaw. might not be reliable, so we go for only flightyaw so far..
-        print(coordinates)
         yaw = coordinates[3]#flightyaw
 
         # Section that uses online elevation and absolutealtitude
@@ -163,6 +166,7 @@ for filename in files:
 
         # create the corner coordinates
         utmcoord = utm.from_latlon(latitude, longitude)
+
         # print(utmcoord)
         x1 = utmcoord[0]
         y1 = utmcoord[1]
@@ -195,7 +199,8 @@ for filename in files:
             georeffilepath = inputfolder + filename.replace('JPG', 'tif')
             im = Image.open(georeffilepath)
             # currently this does not manage to remove the background. nodata = 0, which seems to be good enough, and can maybe be removed later on
-            im.save(outputfilename, 'TIFF')
+            #im.save(outputfilename, 'TIFF')
+            im.save(outputfilename, 'TIFF', compression='tiff_deflate')
             output_fn = outputfilename
         else:
             georeffilepath = inputfolder + filename
@@ -203,9 +208,9 @@ for filename in files:
             im = im.convert('RGBA')
             data = np.array(im)   # "data" is a height x width x 4 numpy array
             im2 = Image.fromarray(data)
-            im2.save(outputfilename, 'TIFF')
+            #im2.save(outputfilename, 'TIFF')
+            im2.save(outputfilename, 'TIFF', compression='tiff_deflate')
             output_fn = outputfilename
-
         # Open the output file for writing:
         ds = gdal.Open(output_fn, gdal.GA_Update)
         # Set spatial reference:

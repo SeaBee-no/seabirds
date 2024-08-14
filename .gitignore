@@ -1,2 +1,3 @@
 seabirdsdatabase/dbconnection.py
 seabirdsdatabase/__pycache__/*.pyc
+georef_single_img/.ipynb_checkpoints/georefsingleimage-checkpoint.py
