@@ -8,8 +8,10 @@ from osgeo import gdal, osr
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
-inputfolder = '/home/wigeon/Pictures/ntnu/trondelag-froan_smaavaeret_2024-05-30/'
-outputfolder = '/home/wigeon/Pictures/ntnu/trondelag-froan_smaavaeret_2024-05-30_georef/'
+mission = 'trondelag-tarva-vaeret_south_1_13082024'
+#mission = 'trondelag-froan_smaavaeret_2024-05-30'
+inputfolder = f'/home/wigeon/Pictures/ntnu/{mission}/'
+outputfolder = f'/home/wigeon/Pictures/ntnu/{mission}_georef/'
 
 # Define sensor parameters
 # focal length, sensor width, sensor height
@@ -116,7 +118,7 @@ def calculate_image_position(latitude, longitude, altitude, roll, pitch, yaw, fo
     # points to the left of the position. pitch is a bit more tricky. 90 is the drone being flat, and the camera pointing 
     # straight down. above 90 is the camera pitching forward in degrees, while negative is the camera pointing backwards. 
     # correct the funciton taking this into account
-    
+
     # Convert geographic coordinates to UTM projection
     transformer = Transformer.from_crs("epsg:4326", "epsg:32632", always_xy=True)
     x, y = transformer.transform(longitude, latitude)
@@ -283,28 +285,28 @@ for entry in gpslog:
     # Calculate corner positions in UTM
     utm_corner_positions = calculate_corner_positions(center_x, center_y, altitude, rotation_matrix, fov_x, fov_y)
 
-    # Plot setup
-    fig, ax = plt.subplots()
-    ax.add_patch(patches.Circle((center_x, center_y), 5, color='blue', label="Center"))
+    # # Plot setup
+    # fig, ax = plt.subplots()
+    # ax.add_patch(patches.Circle((center_x, center_y), 5, color='blue', label="Center"))
 
-    # Plot each corner with a circle marker
-    for i, (x, y) in enumerate(utm_corner_positions, start=1):
-        ax.add_patch(patches.Circle((x, y), 4, color='red', label=f"Corner {i}" if i == 1 else ""))
-        ax.text(x, y, f"{i}", color="black", fontsize=12, ha='center', va='center')
+    # # Plot each corner with a circle marker
+    # for i, (x, y) in enumerate(utm_corner_positions, start=1):
+    #     ax.add_patch(patches.Circle((x, y), 4, color='red', label=f"Corner {i}" if i == 1 else ""))
+    #     ax.text(x, y, f"{i}", color="black", fontsize=12, ha='center', va='center')
 
-    # Draw lines between corners to form the rectangle
-    for i in range(4):
-        x0, y0 = utm_corner_positions[i]
-        x1, y1 = utm_corner_positions[(i + 1) % 4]  # Connect back to the first point
-        ax.plot([x0, x1], [y0, y1], 'r--')
+    # # Draw lines between corners to form the rectangle
+    # for i in range(4):
+    #     x0, y0 = utm_corner_positions[i]
+    #     x1, y1 = utm_corner_positions[(i + 1) % 4]  # Connect back to the first point
+    #     ax.plot([x0, x1], [y0, y1], 'r--')
 
-    # Labels and adjustments
-    ax.set_xlabel("Easting (m)")
-    ax.set_ylabel("Northing (m)")
-    ax.set_title("2D Plot of Image Center and Corners")
-    ax.legend(loc="upper right")
-    ax.grid(True)
-    plt.show()
+    # # Labels and adjustments
+    # ax.set_xlabel("Easting (m)")
+    # ax.set_ylabel("Northing (m)")
+    # ax.set_title("2D Plot of Image Center and Corners")
+    # ax.legend(loc="upper right")
+    # ax.grid(True)
+    # plt.show()
 
     # Convert UTM corners back to latitude and longitude
     wgs84_corner_positions = []
