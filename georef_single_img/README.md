@@ -1,5 +1,8 @@
 # README
-The newest file is georefsingleimageGPSLOG.py, which is the one we will describe here. ChatGPTs explanaition of the code:
+The newest file is georefsingleimageGPSLOG.py, which is the one we will describe here. 
+Currently it only takes the altitude from the drone, which is relative to take-off. We need real altitude to be integrated.
+
+ChatGPTs explanaition of the code:
 
 ## Overview
 This project is focused on georeferencing images from a drone using GPS logs. The newest file, `georefsingleimageGPSLOG.py`, is the main script that processes image files by extracting GPS coordinates, orientation data (yaw, pitch, and roll), and additional metadata, and uses these to georeference the images. The georeferenced images can then be used in GIS applications or mapping software.
