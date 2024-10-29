@@ -111,45 +111,51 @@ def get_xmp_data(filepath):
     return xmp_data
 
 def calculate_image_position(latitude, longitude, altitude, roll, pitch, yaw, focal_length, sensor_width, sensor_height):
-    # Transform latitude and longitude to projected coordinates
-    transformer = Transformer.from_crs("epsg:4326", "epsg:32632", always_xy=True)  # example UTM zone 32N
+    # so the yaw is simple, it is degrees from north, going with the clock to 360. roll is also okay as it is degrees away 
+    # from flat (camera pointing straigt down) with positive values is the drone turning to the right, meaning the camera 
+    # points to the left of the position. pitch is a bit more tricky. 90 is the drone being flat, and the camera pointing 
+    # straight down. above 90 is the camera pitching forward in degrees, while negative is the camera pointing backwards. 
+    # correct the funciton taking this into account
+    
+    # Convert geographic coordinates to UTM projection
+    transformer = Transformer.from_crs("epsg:4326", "epsg:32632", always_xy=True)
     x, y = transformer.transform(longitude, latitude)
     
-    # Convert angles to radians
+    # Convert roll, pitch, yaw from degrees to radians
     roll = np.radians(roll)
-    yaw = np.radians(yaw - 90)  # Adjust yaw: 90 is north, subtracting 90 aligns it with the coordinate system
-    # Adjust pitch: 90 is flat, subtracting 90 aligns it with the coordinate system
-    pitch = np.radians(pitch - 90) # Adjust pitch: 90 is flat, subtracting 90 aligns it with the coordinate system
+    pitch = np.radians(-(pitch - 90))  # Adjust pitch by 90 to align it to pointing down
+    yaw = np.radians(-yaw + 90)  # Align yaw with east and going counter-clockwise
     
-    # Define rotation matrices based on adjusted definitions
-    R_z = np.array([
+    # Define individual rotation matrices
+    R_yaw = np.array([
         [np.cos(yaw), -np.sin(yaw), 0],
         [np.sin(yaw), np.cos(yaw), 0],
         [0, 0, 1]
     ])
     
-    R_y = np.array([
-        [np.cos(pitch), 0, np.sin(pitch)],
-        [0, 1, 0],
-        [-np.sin(pitch), 0, np.cos(pitch)]
-    ])
-    
-    R_x = np.array([
+    R_roll = np.array([
         [1, 0, 0],
         [0, np.cos(roll), -np.sin(roll)],
         [0, np.sin(roll), np.cos(roll)]
     ])
     
-    # Combine rotations in the order yaw -> pitch -> roll
-    rotation_matrix = R_z @ R_y @ R_x
+    R_pitch = np.array([
+        [np.cos(pitch), 0, np.sin(pitch)],
+        [0, 1, 0],
+        [-np.sin(pitch), 0, np.cos(pitch)]
+    ])
+    
+    # Combine the rotations in the order Yaw -> Roll -> Pitch
+    rotation_matrix = R_yaw @ R_roll @ R_pitch
 
     return x, y, rotation_matrix
 
 
+
 def calculate_corner_positions(center_x, center_y, altitude, rotation_matrix, fov_x, fov_y):
     # Define half-angle offsets based on FoV and altitude to get distance to corners
-    half_width = altitude * np.tan(fov_x / 2)
-    half_height = altitude * np.tan(fov_y / 2)
+    half_width = altitude * np.tan(fov_y / 2)
+    half_height = altitude * np.tan(fov_x / 2)
     print("Half-width:", half_width)
     print("Half-height:", half_height)
 
@@ -277,28 +283,28 @@ for entry in gpslog:
     # Calculate corner positions in UTM
     utm_corner_positions = calculate_corner_positions(center_x, center_y, altitude, rotation_matrix, fov_x, fov_y)
 
-    # # Plot setup
-    # fig, ax = plt.subplots()
-    # ax.add_patch(patches.Circle((center_x, center_y), 5, color='blue', label="Center"))
+    # Plot setup
+    fig, ax = plt.subplots()
+    ax.add_patch(patches.Circle((center_x, center_y), 5, color='blue', label="Center"))
 
-    # # Plot each corner with a circle marker
-    # for i, (x, y) in enumerate(utm_corner_positions, start=1):
-    #     ax.add_patch(patches.Circle((x, y), 4, color='red', label=f"Corner {i}" if i == 1 else ""))
-    #     ax.text(x, y, f"{i}", color="black", fontsize=12, ha='center', va='center')
+    # Plot each corner with a circle marker
+    for i, (x, y) in enumerate(utm_corner_positions, start=1):
+        ax.add_patch(patches.Circle((x, y), 4, color='red', label=f"Corner {i}" if i == 1 else ""))
+        ax.text(x, y, f"{i}", color="black", fontsize=12, ha='center', va='center')
 
-    # # Draw lines between corners to form the rectangle
-    # for i in range(4):
-    #     x0, y0 = utm_corner_positions[i]
-    #     x1, y1 = utm_corner_positions[(i + 1) % 4]  # Connect back to the first point
-    #     ax.plot([x0, x1], [y0, y1], 'r--')
+    # Draw lines between corners to form the rectangle
+    for i in range(4):
+        x0, y0 = utm_corner_positions[i]
+        x1, y1 = utm_corner_positions[(i + 1) % 4]  # Connect back to the first point
+        ax.plot([x0, x1], [y0, y1], 'r--')
 
-    # # Labels and adjustments
-    # ax.set_xlabel("Easting (m)")
-    # ax.set_ylabel("Northing (m)")
-    # ax.set_title("2D Plot of Image Center and Corners")
-    # ax.legend(loc="upper right")
-    # ax.grid(True)
-    # plt.show()
+    # Labels and adjustments
+    ax.set_xlabel("Easting (m)")
+    ax.set_ylabel("Northing (m)")
+    ax.set_title("2D Plot of Image Center and Corners")
+    ax.legend(loc="upper right")
+    ax.grid(True)
+    plt.show()
 
     # Convert UTM corners back to latitude and longitude
     wgs84_corner_positions = []
@@ -310,8 +316,8 @@ for entry in gpslog:
     # Now you have the corner positions in WGS84 for creating the georeferenced TIFF
     create_georeferenced_tiff(
         entry["filename"],
-        topleft=wgs84_corner_positions[3],
-        topright=wgs84_corner_positions[2],
-        bottomleft=wgs84_corner_positions[0],
-        bottomright=wgs84_corner_positions[1]
+        topleft=wgs84_corner_positions[2],
+        topright=wgs84_corner_positions[1],
+        bottomleft=wgs84_corner_positions[3],
+        bottomright=wgs84_corner_positions[0]
     )
