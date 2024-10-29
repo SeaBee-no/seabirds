@@ -70,6 +70,7 @@ python georefsingleimageGPSLOG.py
 - **Projection Systems**: Change the EPSG codes for UTM or WGS84 if your project requires different coordinate systems.
 
 ## Example Output from a Mission without RTK
+![Animation](img/animation.gif?raw=true "Animation")
 ![Img0](img/img0.png?raw=true "Img0")
 ![Img1](img/img1.png?raw=true "Img1")
 ![Img2](img/img2.png?raw=true "Img2")
